@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Abregan AI</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Твой стиль из макета */
+        :root { --bg: #0a0a0f; --accent: #6366f1; --text: #f0f0f5; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 20px; font-weight: bold; font-size: 20px; border-bottom: 1px solid #1a1a25; display: flex; align-items: center; gap: 10px; }
+        #chat { flex: 1; overflow-y: auto; padding: 20px; }
+        .msg { margin-bottom: 15px; padding: 12px; border-radius: 12px; max-width: 80%; line-height: 1.4; }
+        .user { background: var(--accent); align-self: flex-end; margin-left: auto; }
+        .ai { background: #1a1a25; border: 1px solid #2a2a35; }
+        .input-box { padding: 20px; background: #12121a; display: flex; gap: 10px; border-top: 1px solid #1a1a25; }
+        input { flex: 1; background: #1a1a25; border: 1px solid #2a2a35; color: white; padding: 12px; border-radius: 10px; outline: none; }
+        button { background: var(--accent); border: none; color: white; padding: 10px 20px; border-radius: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>✨ Abregan AI</header>
+    <div id="chat">
+        <div class="msg ai">Привет, Алекс! Я твой Abregan AI. О чем пообщаемся?</div>
+    </div>
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="Спроси меня о чем угодно...">
+        <button onclick="send()">➤</button>
+    </div>
+
+    <script>
+        const TOKEN = "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";
+        // ПРАВИЛЬНЫЙ АДРЕС ИЗ ТВОЕЙ ОШИБКИ 410
+        const URL = "https://router.huggingface.co/hf-inference/models/google/gemma-2-2b-it";
+
+        async function send() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chat');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Добавляем сообщение пользователя
+            chat.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+
+            // Заглушка ответа
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'msg ai';
+            aiMsg.innerText = 'Думаю...';
+            chat.appendChild(aiMsg);
+
+            try {
+                const response = await fetch(URL, {
+                    method: "POST",
+                    headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ inputs: text })
+                });
+                const data = await response.json();
+                const reply = data[0].generated_text.split("Assistant:").pop() || "Ошибка сервера";
+                aiMsg.innerHTML = marked.parse(reply);
+            } catch (e) {
+                aiMsg.innerText = "Ошибка: " + e.message;
+            }
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>
