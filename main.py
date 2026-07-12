@@ -5,6 +5,7 @@ import schedule
 import time
 import random
 import threading
+import io
 from urllib.parse import quote
 
 app = Flask(__name__)
@@ -56,7 +57,7 @@ def generate_motivation():
             "🔥 Успех приходит к тем, кто не сдается!",
             "⭐ Твои мысли формируют реальность. Думай масштабно!",
             "🚀 Дисциплина — мост между целями и достижениями!",
-            " Препятствия — ступени к успеху!",
+            "💎 Препятствия — ступени к успеху!",
             "🎯 Фокус на цели, а не на проблемах. Двигайся вперед!",
             "💡 Великие дела начинаются с маленьких шагов. Начни сегодня!"
         ]
@@ -67,16 +68,16 @@ def generate_image():
     """Генерирует мотивационную картинку через Pollinations.ai (бесплатно)"""
     try:
         themes = [
-            "mountain sunrise golden light epic",
-            "ocean waves sunset peaceful",
-            "forest path sunlight mystical",
-            "city skyline night stars",
-            "desert dunes sunset dramatic",
-            "snowy mountain peak clear sky",
-            "tropical beach paradise",
-            "autumn forest golden leaves",
-            "northern lights aurora sky",
-            "space galaxy stars nebula"
+            "mountain sunrise golden light epic motivational",
+            "ocean waves sunset peaceful inspirational",
+            "forest path sunlight mystical success",
+            "city skyline night stars achievement",
+            "desert dunes sunset dramatic power",
+            "snowy mountain peak clear sky freedom",
+            "tropical beach paradise dream",
+            "autumn forest golden leaves growth",
+            "northern lights aurora sky magic",
+            "space galaxy stars nebula infinite"
         ]
         
         theme = random.choice(themes)
@@ -102,12 +103,23 @@ def post_to_channel():
     
     try:
         if image_url:
-            # Отправляем фото с подписью
-            bot.send_photo(CHANNEL_ID, image_url, caption=full_text, parse_mode="HTML")
+            # Скачиваем картинку
+            print(f"📥 Скачиваю картинку...")
+            img_response = requests.get(image_url, timeout=30)
+            
+            if img_response.status_code == 200:
+                # Отправляем как файл
+                photo = io.BytesIO(img_response.content)
+                photo.name = 'motivation.jpg'
+                bot.send_photo(CHANNEL_ID, photo, caption=full_text)
+                print(f"✅ Пост с картинкой отправлен: {content[:50]}...")
+            else:
+                # Если не скачалась — отправляем только текст
+                bot.send_message(CHANNEL_ID, full_text)
+                print(f"✅ Пост (без картинки): {content[:50]}...")
         else:
-            # Если картинка не сгенерировалась — только текст
             bot.send_message(CHANNEL_ID, full_text)
-        print(f"✅ Пост отправлен: {content[:50]}...")
+            print(f"✅ Пост (без картинки): {content[:50]}...")
     except Exception as e:
         print(f"❌ Ошибка отправки: {e}")
 
