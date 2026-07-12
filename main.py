@@ -97,3 +97,4 @@ if __name__ == "__main__":
     post_to_channel()
     
     app.run(host='0.0.0.0', port=8080)
+    post_to_channel()  
