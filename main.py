@@ -10,9 +10,9 @@ import os
 app = Flask(__name__)
 
 # ===== НАСТРОЙКИ =====
-BOT_TOKEN = os.getenv'8733493942:AAE_ExnMmMXFccVUA-_P4II2Z9H9OUiWyV4'
-AI_API_KEY = os.getenv'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'
-CHANNEL_ID = os.getenv'CHANNEL_ID'
+BOT_TOKEN ='8733493942:AAE_ExnMmMXFccVUA-_P4II2Z9H9OUiWyV4'
+AI_API_KEY ='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'
+CHANNEL_ID ='-1004382108560'
 
 
 # ===== ИИ ГЕНЕРАТОР =====
