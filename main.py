@@ -89,12 +89,13 @@ def home():
     return "✅ Бот 'Сила Мысли' работает!"
 
 # ===== ЗАПУСК =====
-if __name__ == "__main__":
-    thread = threading.Thread(target=run_schedule, daemon=True)
-    thread.start()
-    
-    print("🚀 Запуск...")
+# Запускаем планировщик при старте
+thread = threading.Thread(target=run_schedule, daemon=True)
+thread.start()
+
+# Отправляем первый пост
+print("🚀 Запуск бота...")
+try:
     post_to_channel()
-    
-    app.run(host='0.0.0.0', port=8080)
-    post_to_channel()  
+except Exception as e:
+    print(f"Ошибка: {e}")
